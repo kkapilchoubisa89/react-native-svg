@@ -110,9 +110,18 @@ export const err = console.error.bind(console);
 
 export function SvgXml(props: XmlProps) {
   const { onError = err, xml, override } = props;
-  const ast = useMemo<JsxAST | null>(() => (xml !== null ? parse(xml) : null), [
-    xml,
-  ]);
+  
+  const ast = useMemo<JsxAST | null>(() => {
+    if (xml !== null) {
+      try {
+        return parse(xml);
+      } catch (error) {
+        onError(error);
+        return null;
+      }
+    }
+    return null
+  }, [xml]);
 
   try {
     return <SvgAst ast={ast} override={override || props} />;
